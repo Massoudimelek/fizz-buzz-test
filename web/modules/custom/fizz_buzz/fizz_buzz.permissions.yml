@@ -1,0 +1,4 @@
+administer fizz_buzz configuration:
+  title: 'Administer fizz_buzz configuration'
+  description: 'Optional description.'
+  restrict access: true

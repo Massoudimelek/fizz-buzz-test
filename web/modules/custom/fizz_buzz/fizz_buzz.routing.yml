@@ -1,0 +1,7 @@
+fizz_buzz.example:
+  path: '/fizz-buzz/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\fizz_buzz\Controller\FizzBuzzController::build'
+  requirements:
+    _permission: 'access content'
