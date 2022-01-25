@@ -91,12 +91,12 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
    *   The response containing the record.
    *
    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+   *  Expected input format http://fizzbuzz.docker.localhost:8000/api/fizz-buzz?var1=3&var2=5&var3=100&str1=fizz&str2=buzz&_format=json
    */
   public function get()
   {
     $params = \Drupal::request()->query->all();
     if ($this->checkParams($params)) {
-      //$this->logger->notice('FizzBuzz record @id has been requested.', ['@id' => $id]);
       $result = $this->Fizzbuzz($params['var1'], $params['var2'], $params['var3'], $params['str1'], $params['str2']);
       $response = new ResourceResponse($result);
       $response->addCacheableDependency($result);
@@ -238,7 +238,7 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
     $results = [];
     for ($i = 1; $i <= $int_3; $i++) {
       // @todo implement common multiple 
-      if ($i % $int_1 * $int_2  === 0) {
+      if ($i % $int_1 === 0 && $i % $int_2  === 0) {
         $results[] = $str_1 . $str_2;
       } else if ($i % $int_1  == 0) {
         $results[] = $str_1;
