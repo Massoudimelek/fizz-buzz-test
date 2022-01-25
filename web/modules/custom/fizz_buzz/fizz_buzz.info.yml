@@ -3,4 +3,6 @@ type: module
 description: Fizz buzz module
 package: Custom
 core: 8.x
+dependencies:
+  - drupal:rest
 core_version_requirement: ^8 || ^9
