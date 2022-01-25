@@ -106,7 +106,7 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
   protected function checkParams($params)
   {
     if ($this->exists($params['var1']) && $this->exists($params['var2']) && $this->exists($params['var3'])) {
-      $this->checkNumeric($params['var1'], $params['var2'], $params['var3']);
+      $this->checkNumericInputs($params['var1'], $params['var2'], $params['var3']);
     }
     return true;
   }
@@ -235,7 +235,7 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
     }
   }
 
-  protected function checkNumeric($int_1, $int_2, $int_3)
+  protected function checkNumericInputs($int_1, $int_2, $int_3)
   {
     if (!is_numeric($int_1)) {
       throw new BadRequestHttpException('var1 is not a number');
@@ -245,15 +245,6 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
     }
     if (!is_numeric($int_3)) {
       throw new BadRequestHttpException('var3 input is not a number');
-    }
-    if ($int_1 <= 0) {
-      throw new BadRequestHttpException('var1 must be a positive number');
-    }
-    if ($int_2 <= 0) {
-      throw new BadRequestHttpException('var2 must be a positive number');
-    }
-    if ($int_3 <= 0) {
-      throw new BadRequestHttpException('var3 must be a positive number');
     }
   }
 }
