@@ -95,11 +95,14 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
   public function get()
   {
     $params = \Drupal::request()->query->all();
-    $this->checkParams($params);
-    $this->logger->notice('FizzBuzz record @id has been requested.', ['@id' => $id]);
-    $response = new ResourceResponse($params);
-    $response->addCacheableDependency($params);
-    return $response;
+    if ($this->checkParams($params)) {
+      //$this->logger->notice('FizzBuzz record @id has been requested.', ['@id' => $id]);
+      $result = $this->Fizzbuzz($params['var1'], $params['var2'], $params['var3'], $params['str1'], $params['str2']);
+      $response = new ResourceResponse($result);
+      $response->addCacheableDependency($result);
+      return $response;
+    }
+    return [];
   }
 
 
@@ -245,6 +248,8 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
         $results[] = $i;
       }
     }
+
+    return $results;
   }
   /**
    * Checks for input integrity function.
