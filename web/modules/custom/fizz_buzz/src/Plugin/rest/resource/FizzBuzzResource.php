@@ -220,21 +220,40 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
     // @DCG Add more validation rules here.
   }
 
-  protected function fizzbuzz($int_1, $int_2, $int_3, $str_1, $str_2, $str_3)
+  /**
+   * Fizzbuzz function
+   *
+   * @param int $int_1
+   * @param int $int_2
+   * @param int $int_3
+   * @param string $str_1
+   * @param string $str_2
+   * @return void
+   */
+  protected function Fizzbuzz($int_1, $int_2, $int_3, $str_1, $str_2)
   {
-    if ($fb < 1 || !is_numeric($fb)) {
-      return '';
-    } else if ($fb % 15 == 0) {
-      return 'FizzBuzz';
-    } else if ($fb % 3 == 0) {
-      return 'Fizz';
-    } else if ($fb % 5 == 0) {
-      return 'Buzz';
-    } else {
-      return $fb;
+    $results = [];
+    for ($i = 1; $i <= $int_3; $i++) {
+      // @todo implement common multiple 
+      if ($i % $int_1 * $int_2  === 0) {
+        $results[] = $str_1 . $str_2;
+      } else if ($i % $int_1  == 0) {
+        $results[] = $str_1;
+      } else if ($i % $int_2 == 0) {
+        $results[] = $str_2;
+      } else {
+        $results[] = $i;
+      }
     }
   }
-
+  /**
+   * Checks for input integrity function.
+   *
+   * @param int $int_1
+   * @param int $int_2
+   * @param int $int_3
+   * @return void
+   */
   protected function checkNumericInputs($int_1, $int_2, $int_3)
   {
     if (!is_numeric($int_1)) {
