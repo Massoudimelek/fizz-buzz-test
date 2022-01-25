@@ -5,7 +5,6 @@ namespace Drupal\fizz_buzz\Plugin\rest\resource;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Routing\BcRoute;
-use Drupal\rest\ModifiedResourceResponse;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Psr\Log\LoggerInterface;
@@ -20,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   id = "fizz_buzz",
  *   label = @Translation("FizzBuzz"),
  *   uri_paths = {
- *     "canonical" = "/api/fizz-buzz/{id}",
+ *     "canonical" = "/api/fizz-buzz",
  *     "https://www.drupal.org/link-relations/create" = "/api/fizz-buzz"
  *   }
  * )
@@ -93,10 +92,14 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
    *
    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
    */
-  public function get($id)
+  public function get()
   {
+    $param = \Drupal::request()->query->all();
+    //$this->checkNumeric($int_1,$int_2,$int_3);
     $this->logger->notice('FizzBuzz record @id has been requested.', ['@id' => $id]);
-    return new ResourceResponse(["test"]);
+    $response = new ResourceResponse($param);
+    $response->addCacheableDependency($param);
+    return $response;
   }
 
 
@@ -141,5 +144,90 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
     }
 
     return $collection;
+  }
+  /**
+   * Responds to POST requests and saves the new record.
+   *
+   * @param mixed $data
+   *   Data to write into the database.
+   *
+   * @return \Drupal\rest\ModifiedResourceResponse
+   *   The HTTP response object.
+   */
+  public function post($data)
+  {
+
+    $this->validate($data);
+
+    $id = $this->dbConnection->insert('fizz_buzz')
+      ->fields($data)
+      ->execute();
+
+    $this->logger->notice('New fizzbuzz record has been created.');
+
+    //  $created_record = $this->loadRecord($id);
+
+    // Return the newly created record in the response body.
+    // return new ModifiedResourceResponse($created_record, 201);
+  }
+
+  /**
+   * Validates incoming record.
+   *
+   * @param mixed $record
+   *   Data to validate.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+   */
+  protected function validate($record)
+  {
+    if (!is_array($record) || count($record) == 0) {
+      throw new BadRequestHttpException('No record content received.');
+    }
+
+    $allowed_fields = [
+      'title',
+      'description',
+      'price',
+    ];
+
+    if (count(array_diff(array_keys($record), $allowed_fields)) > 0) {
+      throw new BadRequestHttpException('Record structure is not correct.');
+    }
+
+    if (empty($record['title'])) {
+      throw new BadRequestHttpException('Title is required.');
+    } elseif (isset($record['title']) && strlen($record['title']) > 255) {
+      throw new BadRequestHttpException('Title is too big.');
+    }
+    // @DCG Add more validation rules here.
+  }
+
+  protected function fizzbuzz($int_1, $int_2, $int_3, $str_1, $str_2, $str_3)
+  {
+    if ($fb < 1 || !is_numeric($fb)) {
+      return '';
+    } else if ($fb % 15 == 0) {
+      return 'FizzBuzz';
+    } else if ($fb % 3 == 0) {
+      return 'Fizz';
+    } else if ($fb % 5 == 0) {
+      return 'Buzz';
+    } else {
+      return $fb;
+    }
+  }
+
+  protected function checkNumeric($int_1, $int_2, $int_3)
+  {
+    if (!is_numeric($int_1)) {
+      throw new BadRequestHttpException('The first input is not a number');
+    }
+    if (!is_numeric($int_2)) {
+      throw new BadRequestHttpException('The second input is not a number');
+    }
+    if (!is_numeric($int_3)) {
+      throw new BadRequestHttpException('The third input is not a number');
+    }
   }
 }
