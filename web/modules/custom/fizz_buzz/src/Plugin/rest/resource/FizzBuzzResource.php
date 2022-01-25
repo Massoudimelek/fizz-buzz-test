@@ -237,7 +237,6 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
   {
     $results = [];
     for ($i = 1; $i <= $int_3; $i++) {
-      // @todo implement common multiple 
       if ($i % $int_1 === 0 && $i % $int_2  === 0) {
         $results[] = $str_1 . $str_2;
       } else if ($i % $int_1  == 0) {
