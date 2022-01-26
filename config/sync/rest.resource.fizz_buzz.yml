@@ -1,4 +1,4 @@
-uuid: 2fa73b95-cc8c-4399-80ea-362d20547222
+uuid: c2d35604-75a0-411f-b965-bd0eeed7bbcc
 langcode: en
 status: true
 dependencies:
@@ -14,6 +14,5 @@ configuration:
     - GET
   formats:
     - json
-    - xml
   authentication:
     - cookie

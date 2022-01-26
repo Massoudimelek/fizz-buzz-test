@@ -45,21 +45,24 @@ use Drupal\fizz_buzz\FizzBuzzStatsInterface;
  *   field_ui_base_route = "entity.fizz_buzz_stats.settings"
  * )
  */
-class FizzBuzzStats extends ContentEntityBase implements FizzBuzzStatsInterface {
+class FizzBuzzStats extends ContentEntityBase implements FizzBuzzStatsInterface
+{
 
   use EntityChangedTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
+  public function getCreatedTime()
+  {
     return $this->get('created')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime($timestamp)
+  {
     $this->set('created', $timestamp);
     return $this;
   }
@@ -67,9 +70,44 @@ class FizzBuzzStats extends ContentEntityBase implements FizzBuzzStatsInterface 
   /**
    * {@inheritdoc}
    */
-  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
+  {
 
     $fields = parent::baseFieldDefinitions($entity_type);
+
+    $fields['url'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Url'))
+      ->setDescription(t('Called url'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['hits'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Hits'))
+      ->setDescription(t('Number of hits'))
+      ->setRequired(TRUE)
+      ->setSetting('max_length', 255)
+      ->setDisplayOptions('form', [
+        'type' => 'number',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'string',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('view', TRUE);
 
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Authored on'))
@@ -92,5 +130,4 @@ class FizzBuzzStats extends ContentEntityBase implements FizzBuzzStatsInterface 
 
     return $fields;
   }
-
 }

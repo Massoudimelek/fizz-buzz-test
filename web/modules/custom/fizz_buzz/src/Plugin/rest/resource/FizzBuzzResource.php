@@ -165,63 +165,7 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
 
     return $collection;
   }
-  /**
-   * Responds to POST requests and saves the new record.
-   *
-   * @param mixed $data
-   *   Data to write into the database.
-   *
-   * @return \Drupal\rest\ModifiedResourceResponse
-   *   The HTTP response object.
-   */
-  public function post($data)
-  {
 
-    $this->validate($data);
-
-    $id = $this->dbConnection->insert('fizz_buzz')
-      ->fields($data)
-      ->execute();
-
-    $this->logger->notice('New fizzbuzz record has been created.');
-
-    //  $created_record = $this->loadRecord($id);
-
-    // Return the newly created record in the response body.
-    // return new ModifiedResourceResponse($created_record, 201);
-  }
-
-  /**
-   * Validates incoming record.
-   *
-   * @param mixed $record
-   *   Data to validate.
-   *
-   * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-   */
-  protected function validate($record)
-  {
-    if (!is_array($record) || count($record) == 0) {
-      throw new BadRequestHttpException('No record content received.');
-    }
-
-    $allowed_fields = [
-      'title',
-      'description',
-      'price',
-    ];
-
-    if (count(array_diff(array_keys($record), $allowed_fields)) > 0) {
-      throw new BadRequestHttpException('Record structure is not correct.');
-    }
-
-    if (empty($record['title'])) {
-      throw new BadRequestHttpException('Title is required.');
-    } elseif (isset($record['title']) && strlen($record['title']) > 255) {
-      throw new BadRequestHttpException('Title is too big.');
-    }
-    // @DCG Add more validation rules here.
-  }
 
   /**
    * Fizzbuzz function
