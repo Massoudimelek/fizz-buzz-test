@@ -1,0 +1,18 @@
+uuid: bb547317-4111-4046-bc99-8d68b1472425
+langcode: en
+status: true
+dependencies:
+  module:
+    - fizz_buzz
+    - serialization
+    - user
+id: fizz_buzz_endpoint_hits
+plugin_id: fizz_buzz_endpoint_hits
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - cookie

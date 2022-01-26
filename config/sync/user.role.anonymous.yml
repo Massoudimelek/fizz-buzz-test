@@ -5,6 +5,7 @@ dependencies:
   config:
     - filter.format.restricted_html
     - rest.resource.fizz_buzz
+    - rest.resource.fizz_buzz_endpoint_hits
   module:
     - comment
     - contact
@@ -23,5 +24,6 @@ permissions:
   - 'access content'
   - 'access site-wide contact form'
   - 'restful get fizz_buzz'
+  - 'restful get fizz_buzz_endpoint_hits'
   - 'search content'
   - 'use text format restricted_html'
