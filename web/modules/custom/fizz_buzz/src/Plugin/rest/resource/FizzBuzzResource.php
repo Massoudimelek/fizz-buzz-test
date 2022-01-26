@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\fizz_buzz\Entity\FizzBuzzStats;
 use Drupal\Core\Cache\CacheableMetadata;
+
 /**
  * Represents FizzBuzz records as resources.
  *
@@ -113,20 +114,21 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
         $hits = $stat->get('hits')->value + 1;
         $stat->set('hits', $hits);
         $stat->save();
+      } else {
+        // Add a stat entry. 
+        $stat = FizzBuzzStats::create([
+          'url' => $uri,
+          'hits' => $hits,
+        ]);
+        $stat->save();
       }
 
-      // Add a stat entry. 
-      // $stat = FizzBuzzStats::create([
-      //   'url' => $uri,
-      //   'hits' => 447,
-      // ]);
-      // $stat->save();
       $response = new ResourceResponse($result);
-      // Workaround since drupal always caches results for anon users.
+      // Workaround since drupal always caches results for anon users @todo improve it.
       $disable_cache = new CacheableMetadata();
       $disable_cache->setCacheMaxAge(0);
       $response->addCacheableDependency($disable_cache);
-      \Drupal::service('page_cache_kill_switch')->trigger(); 
+      \Drupal::service('page_cache_kill_switch')->trigger();
       return $response;
     }
     return [];
