@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\fizz_buzz\Entity\FizzBuzzStats;
-
+use Drupal\Core\Cache\CacheableMetadata;
 /**
  * Represents FizzBuzz records as resources.
  *
@@ -101,21 +101,32 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
 
     if ($this->checkParams($params)) {
       $result = $this->Fizzbuzz($params['var1'], $params['var2'], $params['var3'], $params['str1'], $params['str2']);
+      $hits = 1;
       // load stat entry if exists
       $query = \Drupal::entityQuery('fizz_buzz_stats')
         ->condition('url', $uri);
 
       $id = $query->execute();
-      var_dump($id);
-      die;
+
+      if ($this->exists($id)) {
+        $stat =  \Drupal::entityTypeManager()->getStorage('fizz_buzz_stats')->load(reset($id));
+        $hits = $stat->get('hits')->value + 1;
+        $stat->set('hits', $hits);
+        $stat->save();
+      }
+
       // Add a stat entry. 
-      $stat = FizzBuzzStats::create([
-        'url' => $uri,
-        'hits' => 447,
-      ]);
-      $stat->save();
+      // $stat = FizzBuzzStats::create([
+      //   'url' => $uri,
+      //   'hits' => 447,
+      // ]);
+      // $stat->save();
       $response = new ResourceResponse($result);
-      $response->addCacheableDependency($stat);
+      // Workaround since drupal always caches results for anon users.
+      $disable_cache = new CacheableMetadata();
+      $disable_cache->setCacheMaxAge(0);
+      $response->addCacheableDependency($disable_cache);
+      \Drupal::service('page_cache_kill_switch')->trigger(); 
       return $response;
     }
     return [];
