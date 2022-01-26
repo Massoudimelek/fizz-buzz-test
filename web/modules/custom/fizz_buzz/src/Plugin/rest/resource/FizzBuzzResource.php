@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Drupal\fizz_buzz\Entity\FizzBuzzStats;
 
 /**
  * Represents FizzBuzz records as resources.
@@ -96,10 +97,25 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
   public function get()
   {
     $params = \Drupal::request()->query->all();
+    $uri = \Drupal::request()->getRequestUri();
+
     if ($this->checkParams($params)) {
       $result = $this->Fizzbuzz($params['var1'], $params['var2'], $params['var3'], $params['str1'], $params['str2']);
+      // load stat entry if exists
+      $query = \Drupal::entityQuery('fizz_buzz_stats')
+        ->condition('url', $uri);
+
+      $id = $query->execute();
+      var_dump($id);
+      die;
+      // Add a stat entry. 
+      $stat = FizzBuzzStats::create([
+        'url' => $uri,
+        'hits' => 447,
+      ]);
+      $stat->save();
       $response = new ResourceResponse($result);
-      $response->addCacheableDependency($result);
+      $response->addCacheableDependency($stat);
       return $response;
     }
     return [];
