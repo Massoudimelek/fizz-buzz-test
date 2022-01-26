@@ -5,13 +5,10 @@ namespace Drupal\fizz_buzz\Plugin\rest\resource;
 use Drupal\Component\Plugin\DependentPluginInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Routing\BcRoute;
-use Drupal\rest\ModifiedResourceResponse;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Represents Endpoint Hits records as resources.
@@ -20,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *   id = "fizz_buzz_endpoint_hits",
  *   label = @Translation("Endpoint Hits"),
  *   uri_paths = {
- *     "canonical" = "/api/fizz-buzz-endpoint-hits/{id}",
+ *     "canonical" = "/api/fizz-buzz-endpoint-hits",
  *     "https://www.drupal.org/link-relations/create" = "/api/fizz-buzz-endpoint-hits"
  *   }
  * )
@@ -35,7 +32,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * For accessing Drupal entities through REST interface use
  * \Drupal\rest\Plugin\rest\resource\EntityResource plugin.
  */
-class EndpointHitsResource extends ResourceBase implements DependentPluginInterface {
+class EndpointHitsResource extends ResourceBase implements DependentPluginInterface
+{
 
   /**
    * The database connection.
@@ -60,7 +58,8 @@ class EndpointHitsResource extends ResourceBase implements DependentPluginInterf
    * @param \Drupal\Core\Database\Connection $db_connection
    *   The database connection.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, Connection $db_connection) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, Connection $db_connection)
+  {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->dbConnection = $db_connection;
   }
@@ -68,7 +67,8 @@ class EndpointHitsResource extends ResourceBase implements DependentPluginInterf
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
+  {
     return new static(
       $configuration,
       $plugin_id,
@@ -90,81 +90,32 @@ class EndpointHitsResource extends ResourceBase implements DependentPluginInterf
    *
    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
    */
-  public function get($id) {
-    return new ResourceResponse($this->loadRecord($id));
-  }
+  public function get()
+  {
+    $ids = \Drupal::entityQuery('fizz_buzz_stats')->execute();
+    $stats =   \Drupal::entityTypeManager()->getStorage('fizz_buzz_stats')->loadMultiple($ids);
+    $highest_hit = 0;
+    $stat_id = NULL;
+    foreach ($stats as $id => $stat) {
+      if ($stat->get('hits')->value > $highest_hit) {
+        $highest_hit = $stat->get('hits')->value;
+        $stat_id = $id;
+      }
+    }
 
-  /**
-   * Responds to POST requests and saves the new record.
-   *
-   * @param mixed $data
-   *   Data to write into the database.
-   *
-   * @return \Drupal\rest\ModifiedResourceResponse
-   *   The HTTP response object.
-   */
-  public function post($data) {
-
-    $this->validate($data);
-
-    $id = $this->dbConnection->insert('fizz_buzz_endpoint_hits')
-      ->fields($data)
-      ->execute();
-
-    $this->logger->notice('New endpoint hits record has been created.');
-
-    $created_record = $this->loadRecord($id);
-
-    // Return the newly created record in the response body.
-    return new ModifiedResourceResponse($created_record, 201);
-  }
-
-  /**
-   * Responds to entity PATCH requests.
-   *
-   * @param int $id
-   *   The ID of the record.
-   * @param mixed $data
-   *   Data to write into the database.
-   *
-   * @return \Drupal\rest\ModifiedResourceResponse
-   *   The HTTP response object.
-   */
-  public function patch($id, $data) {
-    $this->validate($data);
-    return $this->updateRecord($id, $data);
-  }
-
-  /**
-   * Responds to entity DELETE requests.
-   *
-   * @param int $id
-   *   The ID of the record.
-   *
-   * @return \Drupal\rest\ModifiedResourceResponse
-   *   The HTTP response object.
-   *
-   * @throws \Symfony\Component\HttpKernel\Exception\HttpException
-   */
-  public function delete($id) {
-
-    // Make sure the record still exists.
-    $this->loadRecord($id);
-
-    $this->dbConnection->delete('fizz_buzz_endpoint_hits')
-      ->condition('id', $id)
-      ->execute();
-
-    $this->logger->notice('Endpoint Hits record @id has been deleted.', ['@id' => $id]);
-
-    // Deleted responses have an empty body.
-    return new ModifiedResourceResponse(NULL, 204);
+    $result = [];
+    $result['parameters'] = $stats[$stat_id]->get('url')->value;
+    $result['hits'] = $stats[$stat_id]->get('hits')->value;
+    // Anon caching workaround.
+    \Drupal::service('page_cache_kill_switch')->trigger();
+    return new ResourceResponse($result);
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function getBaseRoute($canonical_path, $method) {
+  protected function getBaseRoute($canonical_path, $method)
+  {
     $route = parent::getBaseRoute($canonical_path, $method);
 
     // Change ID validation pattern.
@@ -178,14 +129,16 @@ class EndpointHitsResource extends ResourceBase implements DependentPluginInterf
   /**
    * {@inheritdoc}
    */
-  public function calculateDependencies() {
+  public function calculateDependencies()
+  {
     return [];
   }
 
   /**
    * {@inheritdoc}
    */
-  public function routes() {
+  public function routes()
+  {
     $collection = parent::routes();
 
     // Take out BC routes added in base class.
@@ -199,86 +152,4 @@ class EndpointHitsResource extends ResourceBase implements DependentPluginInterf
 
     return $collection;
   }
-
-  /**
-   * Validates incoming record.
-   *
-   * @param mixed $record
-   *   Data to validate.
-   *
-   * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
-   */
-  protected function validate($record) {
-    if (!is_array($record) || count($record) == 0) {
-      throw new BadRequestHttpException('No record content received.');
-    }
-
-    $allowed_fields = [
-      'title',
-      'description',
-      'price',
-    ];
-
-    if (count(array_diff(array_keys($record), $allowed_fields)) > 0) {
-      throw new BadRequestHttpException('Record structure is not correct.');
-    }
-
-    if (empty($record['title'])) {
-      throw new BadRequestHttpException('Title is required.');
-    }
-    elseif (isset($record['title']) && strlen($record['title']) > 255) {
-      throw new BadRequestHttpException('Title is too big.');
-    }
-    // @DCG Add more validation rules here.
-  }
-
-  /**
-   * Loads record from database.
-   *
-   * @param int $id
-   *   The ID of the record.
-   *
-   * @return array
-   *   The database record.
-   *
-   * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-   */
-  protected function loadRecord($id) {
-    $record = $this->dbConnection->query('SELECT * FROM {fizz_buzz_endpoint_hits} WHERE id = :id', [':id' => $id])->fetchAssoc();
-    if (!$record) {
-      throw new NotFoundHttpException('The record was not found.');
-    }
-    return $record;
-  }
-
-  /**
-   * Updates record.
-   *
-   * @param int $id
-   *   The ID of the record.
-   * @param array $record
-   *   The record to validate.
-   *
-   * @return \Drupal\rest\ModifiedResourceResponse
-   *   The HTTP response object.
-   */
-  protected function updateRecord($id, array $record) {
-
-    // Make sure the record already exists.
-    $this->loadRecord($id);
-
-    $this->validate($record);
-
-    $this->dbConnection->update('fizz_buzz_endpoint_hits')
-      ->fields($record)
-      ->condition('id', $id)
-      ->execute();
-
-    $this->logger->notice('Endpoint Hits record @id has been updated.', ['@id' => $id]);
-
-    // Return the updated record in the response body.
-    $updated_record = $this->loadRecord($id);
-    return new ModifiedResourceResponse($updated_record, 200);
-  }
-
 }

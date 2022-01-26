@@ -110,6 +110,7 @@ class FizzBuzzResource extends ResourceBase implements DependentPluginInterface
       $id = $query->execute();
 
       if ($this->exists($id)) {
+        // Update existing stat entry.
         $stat =  \Drupal::entityTypeManager()->getStorage('fizz_buzz_stats')->load(reset($id));
         $hits = $stat->get('hits')->value + 1;
         $stat->set('hits', $hits);
