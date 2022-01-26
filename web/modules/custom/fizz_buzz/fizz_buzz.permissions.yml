@@ -1,4 +1,5 @@
-administer fizz_buzz configuration:
-  title: 'Administer fizz_buzz configuration'
-  description: 'Optional description.'
+administer fizz buzz stats:
+  title: 'Administer fizz buzz stats settings'
   restrict access: true
+access fizz buzz stats overview:
+  title: 'Access fizz buzz stats overview page'

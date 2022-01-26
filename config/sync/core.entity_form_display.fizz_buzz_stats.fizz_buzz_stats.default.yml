@@ -1,0 +1,36 @@
+uuid: f7cde3b8-9f87-4f4f-8de9-d62bbde4fe1f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.fizz_buzz_stats.fizz_buzz_stats.field_hits
+    - field.field.fizz_buzz_stats.fizz_buzz_stats.field_url
+  module:
+    - fizz_buzz
+id: fizz_buzz_stats.fizz_buzz_stats.default
+targetEntityType: fizz_buzz_stats
+bundle: fizz_buzz_stats
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_hits:
+    type: number
+    weight: 21
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_url:
+    type: string_textfield
+    weight: 22
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden: {  }

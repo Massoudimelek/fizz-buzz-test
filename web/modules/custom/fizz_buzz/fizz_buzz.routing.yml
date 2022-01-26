@@ -1,7 +1,7 @@
-fizz_buzz.example:
-  path: '/fizz-buzz/example'
+entity.fizz_buzz_stats.settings:
+  path: 'admin/structure/fizz-buzz-stats'
   defaults:
-    _title: 'Example'
-    _controller: '\Drupal\fizz_buzz\Controller\FizzBuzzController::build'
+    _form: '\Drupal\fizz_buzz\Form\FizzBuzzStatsSettingsForm'
+    _title: 'Fizz buzz stats'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer fizz buzz stats'

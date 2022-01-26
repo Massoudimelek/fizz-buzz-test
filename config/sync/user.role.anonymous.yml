@@ -1,4 +1,4 @@
-uuid: 3a5b39df-388b-480e-9baf-e5643f0540fa
+uuid: 819637a6-628f-458f-96fd-3eef8772db8b
 langcode: en
 status: true
 dependencies:
@@ -23,6 +23,5 @@ permissions:
   - 'access content'
   - 'access site-wide contact form'
   - 'restful get fizz_buzz'
-  - 'restful post fizz_buzz'
   - 'search content'
   - 'use text format restricted_html'

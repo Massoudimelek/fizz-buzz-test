@@ -1,9 +1,9 @@
 _core:
   default_config_hash: VDJxTZtQR21qB4lvOq8zszJZLvLKrSPQpdn2E3T71Ww
 langcode: en
-uuid: c7f77afc-ac91-46ad-a8fc-c4d59ac21a81
-name: 'fizz buzz'
-mail: massoudimelek@gmail.com
+uuid: 59ae34c2-1b1e-425e-8908-566abbd1ee06
+name: 'Drush Site-Install'
+mail: admin@example.com
 slogan: ''
 page:
   403: ''

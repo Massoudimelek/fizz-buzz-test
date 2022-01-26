@@ -2,9 +2,35 @@
 
 /**
  * @file
- * Primary module hooks for fizz_buzz module.
- *
- * @DCG
- * This file is no longer required in Drupal 8.
- * @see https://www.drupal.org/node/2217931
+ * Provides a fizz buzz stats entity type.
  */
+
+use Drupal\Core\Render\Element;
+
+/**
+ * Implements hook_theme().
+ */
+function fizz_buzz_theme() {
+  return [
+    'fizz_buzz_stats' => [
+      'render element' => 'elements',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for fizz buzz stats templates.
+ *
+ * Default template: fizz-buzz-stats.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the fizz buzz stats information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_fizz_buzz_stats(array &$variables) {
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+}

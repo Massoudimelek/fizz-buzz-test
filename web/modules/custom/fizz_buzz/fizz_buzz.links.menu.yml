@@ -1,0 +1,10 @@
+entity.fizz_buzz_stats.settings:
+  title: Fizz buzz stats
+  description: Configure a Fizz buzz stats entity type
+  route_name:  entity.fizz_buzz_stats.settings
+  parent: system.admin_structure
+entity.fizz_buzz_stats.collection:
+  title: Fizz buzz statses
+  description: List of fizz buzz statses
+  route_name: entity.fizz_buzz_stats.collection
+  parent: system.admin_content

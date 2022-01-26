@@ -1,0 +1,5 @@
+fizz_buzz_stats.add_form:
+  route_name: entity.fizz_buzz_stats.add_form
+  title: 'Add fizz buzz stats'
+  appears_on:
+    - entity.fizz_buzz_stats.collection

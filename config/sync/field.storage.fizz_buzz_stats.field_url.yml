@@ -1,0 +1,21 @@
+uuid: 44d0f9b9-e508-4ba8-8d4e-c5a858c28e3e
+langcode: en
+status: true
+dependencies:
+  module:
+    - fizz_buzz
+id: fizz_buzz_stats.field_url
+field_name: field_url
+entity_type: fizz_buzz_stats
+type: string
+settings:
+  max_length: 255
+  case_sensitive: false
+  is_ascii: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
